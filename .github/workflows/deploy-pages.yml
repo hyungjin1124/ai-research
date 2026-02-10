@@ -23,6 +23,11 @@ jobs:
         with:
           path: content
 
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
       - name: Clone Quartz v4
         run: |
           git clone --depth 1 https://github.com/jackyzha0/quartz.git quartz
