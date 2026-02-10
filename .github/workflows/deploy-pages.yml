@@ -1,0 +1,158 @@
+name: Deploy to GitHub Pages (Quartz)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout content
+        uses: actions/checkout@v4
+        with:
+          path: content
+
+      - name: Clone Quartz v4
+        run: |
+          git clone --depth 1 https://github.com/jackyzha0/quartz.git quartz
+          cd quartz && npm ci
+
+      - name: Copy content into Quartz
+        run: |
+          # 기존 기본 콘텐츠 제거 후 우리 콘텐츠 복사
+          rm -rf quartz/content/*
+          cp -r content/* quartz/content/
+
+          # Quartz 빌드에 불필요한 파일 제거
+          rm -rf quartz/content/.git
+          rm -rf quartz/content/.github
+          rm -rf quartz/content/.gitignore
+
+      - name: Configure Quartz
+        run: |
+          cat > quartz/quartz.config.ts << 'QUARTZCONFIG'
+          import { QuartzConfig } from "./quartz/cfg"
+          import * as Plugin from "./quartz/plugins"
+
+          const config: QuartzConfig = {
+            configuration: {
+              pageTitle: "KonaChain AI Research",
+              pageTitleSuffix: "",
+              enableSPA: true,
+              enablePopovers: true,
+              analytics: null,
+              locale: "ko-KR",
+              baseUrl: "hyungjin1124.github.io/ai-research",
+              ignorePatterns: [
+                "private",
+                "templates",
+                "_TEMPLATE*",
+                "_CONTEXT*",
+                ".obsidian",
+              ],
+              defaultDateType: "modified",
+              theme: {
+                fontOrigin: "googleFonts",
+                cdnCaching: true,
+                typography: {
+                  header: "Pretendard",
+                  body: "Pretendard",
+                  code: "JetBrains Mono",
+                },
+                colors: {
+                  lightMode: {
+                    light: "#faf8f8",
+                    lightgray: "#e5e5e5",
+                    gray: "#b8b8b8",
+                    darkgray: "#4e4e4e",
+                    dark: "#2b2b2b",
+                    secondary: "#284b63",
+                    tertiary: "#84a59d",
+                    highlight: "rgba(143, 159, 169, 0.15)",
+                    textHighlight: "#fff23688",
+                  },
+                  darkMode: {
+                    light: "#161618",
+                    lightgray: "#393639",
+                    gray: "#646464",
+                    darkgray: "#d4d4d4",
+                    dark: "#ebebec",
+                    secondary: "#7b97aa",
+                    tertiary: "#84a59d",
+                    highlight: "rgba(143, 159, 169, 0.15)",
+                    textHighlight: "#fff23688",
+                  },
+                },
+              },
+            },
+            plugins: {
+              transformers: [
+                Plugin.FrontMatter(),
+                Plugin.CreatedModifiedDate({
+                  priority: ["frontmatter", "git", "filesystem"],
+                }),
+                Plugin.SyntaxHighlighting({
+                  theme: {
+                    light: "github-light",
+                    dark: "github-dark",
+                  },
+                }),
+                Plugin.ObsidianFlavoredMarkdown({ enableInHtmlEmbed: false }),
+                Plugin.GitHubFlavoredMarkdown(),
+                Plugin.TableOfContents(),
+                Plugin.CrawlLinks({ markdownLinkResolution: "shortest" }),
+                Plugin.Description(),
+                Plugin.Latex({ renderEngine: "katex" }),
+              ],
+              filters: [Plugin.RemoveDrafts()],
+              emitters: [
+                Plugin.AliasRedirects(),
+                Plugin.ComponentResources(),
+                Plugin.ContentPage(),
+                Plugin.FolderPage(),
+                Plugin.TagPage(),
+                Plugin.ContentIndex({
+                  enableSiteMap: true,
+                  enableRSS: true,
+                }),
+                Plugin.Assets(),
+                Plugin.Static(),
+                Plugin.NotFoundPage(),
+              ],
+            },
+          }
+
+          export default config
+          QUARTZCONFIG
+
+      - name: Build Quartz
+        run: |
+          cd quartz
+          npx quartz build
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: quartz/public
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
