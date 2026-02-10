@@ -1,0 +1,7 @@
+# Obsidian
+.obsidian/
+.DS_Store
+
+# Large media files (add specific ones if needed)
+# *.mp4
+# *.zip
