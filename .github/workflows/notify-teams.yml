@@ -1,0 +1,154 @@
+name: Teams Daily Digest Notification
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'AI Daily News/**'
+
+jobs:
+  notify-teams:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Find today's digest
+        id: find
+        run: |
+          # 가장 최근 추가/변경된 다이제스트 파일 찾기
+          FILE=$(git diff --name-only HEAD~1 HEAD -- 'AI Daily News/' \
+            | grep -E '[0-9]{4}-[0-9]{2}-[0-9]{2}\.md$' \
+            | head -1)
+
+          if [ -z "$FILE" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "No digest file found in diff"
+            exit 0
+          fi
+
+          echo "file=$FILE" >> $GITHUB_OUTPUT
+          echo "skip=false" >> $GITHUB_OUTPUT
+
+          # 날짜 추출
+          DATE=$(basename "$FILE" .md)
+          echo "date=$DATE" >> $GITHUB_OUTPUT
+
+      - name: Extract digest summary
+        if: steps.find.outputs.skip != 'true'
+        id: summary
+        run: |
+          FILE="${{ steps.find.outputs.file }}"
+
+          # 기사 수 추출 (frontmatter article_count)
+          COUNT=$(grep '^article_count:' "$FILE" | sed 's/article_count: //')
+          echo "count=$COUNT" >> $GITHUB_OUTPUT
+
+          # 높음 중요도 뉴스 제목 추출 (#### 로 시작하는 줄)
+          HIGH=$(sed -n '/^### 🔴 높음/,/^### 🟡 보통/{
+            /^#### /{s/^#### /• /;p}
+          }' "$FILE" | head -5)
+
+          # 보통 중요도 뉴스 건수
+          MEDIUM_COUNT=$(sed -n '/^### 🟡 보통/,/^### 🟢 낮음/{
+            /^#### /p
+          }' "$FILE" | wc -l | tr -d ' ')
+          echo "medium_count=$MEDIUM_COUNT" >> $GITHUB_OUTPUT
+
+          # 낮음 중요도 뉴스 건수
+          LOW_COUNT=$(sed -n '/^### 🟢 낮음/,/^## 제품/{
+            /^#### /p
+          }' "$FILE" | wc -l | tr -d ' ')
+          echo "low_count=$LOW_COUNT" >> $GITHUB_OUTPUT
+
+          # 멀티라인 출력
+          {
+            echo 'high<<EOF'
+            echo "$HIGH"
+            echo 'EOF'
+          } >> $GITHUB_OUTPUT
+
+      - name: Send Teams notification
+        if: steps.find.outputs.skip != 'true'
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          DATE: ${{ steps.find.outputs.date }}
+          COUNT: ${{ steps.summary.outputs.count }}
+          HIGH: ${{ steps.summary.outputs.high }}
+          MEDIUM_COUNT: ${{ steps.summary.outputs.medium_count }}
+          LOW_COUNT: ${{ steps.summary.outputs.low_count }}
+        run: |
+          # 높음 뉴스를 줄바꿈 처리
+          HIGH_FORMATTED=$(echo "$HIGH" | sed 's/$/\\n/' | tr -d '\n' | sed 's/\\n$//')
+
+          # Adaptive Card JSON
+          cat > /tmp/teams-card.json << CARD
+          {
+            "type": "message",
+            "attachments": [{
+              "contentType": "application/vnd.microsoft.card.adaptive",
+              "content": {
+                "\$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                "type": "AdaptiveCard",
+                "version": "1.4",
+                "body": [
+                  {
+                    "type": "TextBlock",
+                    "size": "Large",
+                    "weight": "Bolder",
+                    "text": "📰 AI Daily Digest — ${DATE}"
+                  },
+                  {
+                    "type": "ColumnSet",
+                    "columns": [
+                      {
+                        "type": "Column",
+                        "width": "auto",
+                        "items": [{
+                          "type": "TextBlock",
+                          "text": "📊 총 **${COUNT}건**",
+                          "spacing": "Small"
+                        }]
+                      },
+                      {
+                        "type": "Column",
+                        "width": "auto",
+                        "items": [{
+                          "type": "TextBlock",
+                          "text": "🔴 높음 | 🟡 ${MEDIUM_COUNT}건 | 🟢 ${LOW_COUNT}건",
+                          "spacing": "Small"
+                        }]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "TextBlock",
+                    "text": "🔴 **주요 뉴스**",
+                    "weight": "Bolder",
+                    "spacing": "Medium",
+                    "separator": true
+                  },
+                  {
+                    "type": "TextBlock",
+                    "text": "${HIGH_FORMATTED}",
+                    "wrap": true,
+                    "spacing": "Small"
+                  }
+                ],
+                "actions": [
+                  {
+                    "type": "Action.OpenUrl",
+                    "title": "📂 GitHub에서 전체 보기",
+                    "url": "https://github.com/hyungjin1124/ai-research/blob/main/AI%20Daily%20News/$(echo ${DATE} | cut -c1-4)/$(echo ${DATE} | cut -c6-7)/${DATE}.md"
+                  }
+                ]
+              }
+            }]
+          }
+          CARD
+
+          # Teams Webhook 전송
+          curl -s -H "Content-Type: application/json" \
+               -d @/tmp/teams-card.json \
+               "$TEAMS_WEBHOOK_URL"
+
+          echo "✅ Teams notification sent for ${DATE}"
