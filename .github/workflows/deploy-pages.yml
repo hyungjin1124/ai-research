@@ -44,6 +44,17 @@ jobs:
           rm -rf quartz/content/.github
           rm -rf quartz/content/.gitignore
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Generate web indexes
+        run: |
+          pip install pyyaml
+          python quartz/content/scripts/generate_web_indexes.py \
+            --content-dir quartz/content
+
       - name: Configure Quartz
         run: |
           cat > quartz/quartz.config.ts << 'QUARTZCONFIG'
@@ -65,6 +76,9 @@ jobs:
                 "_TEMPLATE*",
                 "_CONTEXT*",
                 ".obsidian",
+                "AGENTS.md",
+                "update_relevant_roles.py",
+                "scripts",
               ],
               defaultDateType: "modified",
               theme: {
@@ -145,6 +159,12 @@ jobs:
         run: |
           cd quartz
           npx quartz build
+
+      - name: Verify no broken dataview blocks
+        run: |
+          if grep -rl 'dataview' quartz/public/ 2>/dev/null; then
+            echo "WARNING: Dataview references found in built output"
+          fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
