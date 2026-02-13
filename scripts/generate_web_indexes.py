@@ -65,10 +65,7 @@ def scan_daily_news(content_dir: Path) -> list[dict]:
         if "_TEMPLATE" in md.name:
             continue
 
-        # content root 기준 경로 (wikilink용)
         rel_from_root = md.relative_to(content_dir)
-        # 부모 디렉토리 기준 경로 (markdown link용)
-        rel_from_parent = md.relative_to(news_dir)
         digests.append({
             "date": str(fm.get("date", "")),
             "article_count": fm.get("article_count", 0),
@@ -78,7 +75,6 @@ def scan_daily_news(content_dir: Path) -> list[dict]:
             "topic_tags": fm.get("topic_tags", []) or [],
             "status": fm.get("status", ""),
             "rel_path": str(rel_from_root.with_suffix("")),
-            "local_path": str(rel_from_parent.with_suffix("")),
         })
 
     digests.sort(key=lambda d: d["date"], reverse=True)
@@ -102,7 +98,6 @@ def scan_products(content_dir: Path) -> list[dict]:
         slug = md.parent.name
         tags = [t for t in (fm.get("tags", []) or []) if t != "AI-Agent"]
         rel_from_root = md.relative_to(content_dir)
-        rel_from_parent = md.relative_to(prod_dir)
         products.append({
             "product_name": fm.get("product_name", slug),
             "vendor": fm.get("vendor", ""),
@@ -111,7 +106,6 @@ def scan_products(content_dir: Path) -> list[dict]:
             "status": fm.get("status", ""),
             "last_updated": str(fm.get("last_updated", "")),
             "slug": slug,
-            "local_path": str(rel_from_parent.with_suffix("")),
             "full_path": str(rel_from_root.with_suffix("")),
         })
 
@@ -137,7 +131,6 @@ def scan_insights(content_dir: Path) -> list[dict]:
         category = fm.get("category", md.parent.name)
         slug = md.stem
         rel_from_root = md.relative_to(content_dir)
-        rel_from_parent = md.relative_to(ins_dir)
         insights.append({
             "topic_name": fm.get("topic_name", slug),
             "category": category,
@@ -145,7 +138,6 @@ def scan_insights(content_dir: Path) -> list[dict]:
             "confidence": fm.get("confidence", ""),
             "last_updated": str(fm.get("last_updated", "")),
             "slug": slug,
-            "local_path": str(rel_from_parent.with_suffix("")),
             "full_path": str(rel_from_root.with_suffix("")),
         })
 
@@ -238,7 +230,7 @@ def generate_daily_news_index(digests: list[dict]) -> str:
         lines.append("| 날짜 | 기사 수 | 커뮤니티 | Deep Dive | 제품 언급 | 상태 |")
         lines.append("|------|---------|---------|-----------|----------|------|")
         for d in recent:
-            date_link = f"[{d['date']}](./{d['local_path']})"
+            date_link = f"[[{d['rel_path']}|{d['date']}]]"
             mentions = ", ".join(d["product_mentions"][:5])
             if len(d["product_mentions"]) > 5:
                 mentions += f" 외 {len(d['product_mentions']) - 5}건"
@@ -310,7 +302,7 @@ def generate_products_index(products: list[dict]) -> str:
     lines.append("| 제품 | 회사 | 분류 | 상태 | 최종 수정 |")
     lines.append("|------|------|------|------|----------|")
     for p in products:
-        plink = f"[{p['product_name']}](./{p['local_path']})"
+        plink = f"[[{p['full_path']}|{p['product_name']}]]"
         lines.append(
             f"| {plink} | {p['vendor']} | {p['category']} "
             f"| {p['status']} | {p['last_updated']} |"
@@ -331,7 +323,7 @@ def generate_products_index(products: list[dict]) -> str:
         lines.append("|------|------|----------|")
         for p in cat_products:
             tags_str = ", ".join(p["tags"][:4])
-            plink = f"[{p['product_name']}](./{p['local_path']})"
+            plink = f"[[{p['full_path']}|{p['product_name']}]]"
             lines.append(f"| {plink} | {p['vendor']} | {tags_str} |")
         lines.extend(["", "---", ""])
 
@@ -342,7 +334,7 @@ def generate_products_index(products: list[dict]) -> str:
     lines.append("|------|------|")
     for p in products:
         tags_str = ", ".join(p["tags"])
-        plink = f"[{p['product_name']}](./{p['local_path']})"
+        plink = f"[[{p['full_path']}|{p['product_name']}]]"
         lines.append(f"| {plink} | {tags_str} |")
 
     lines.append("")
@@ -388,7 +380,7 @@ def generate_insights_index(insights: list[dict]) -> str:
         lines.append("| 주제 | 상태 | 신뢰도 | 최종 수정 |")
         lines.append("|------|------|--------|----------|")
         for i in cat_insights:
-            ilink = f"[{i['topic_name']}](./{i['local_path']})"
+            ilink = f"[[{i['full_path']}|{i['topic_name']}]]"
             lines.append(
                 f"| {ilink} | {i['status']} | {i['confidence']} | {i['last_updated']} |"
             )
@@ -403,7 +395,7 @@ def generate_insights_index(insights: list[dict]) -> str:
         lines.append("| 주제 | 카테고리 | 상태 | 최종 수정 |")
         lines.append("|------|---------|------|----------|")
         for i in top20:
-            ilink = f"[{i['topic_name']}](./{i['local_path']})"
+            ilink = f"[[{i['full_path']}|{i['topic_name']}]]"
             lines.append(
                 f"| {ilink} | {i['category']} | {i['status']} | {i['last_updated']} |"
             )
