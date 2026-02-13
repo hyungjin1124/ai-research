@@ -65,7 +65,7 @@ def scan_daily_news(content_dir: Path) -> list[dict]:
         if "_TEMPLATE" in md.name:
             continue
 
-        rel = md.relative_to(news_dir)
+        rel = md.relative_to(content_dir)
         digests.append({
             "date": str(fm.get("date", "")),
             "article_count": fm.get("article_count", 0),
@@ -74,7 +74,7 @@ def scan_daily_news(content_dir: Path) -> list[dict]:
             "product_mentions": fm.get("product_mentions", []) or [],
             "topic_tags": fm.get("topic_tags", []) or [],
             "status": fm.get("status", ""),
-            "rel_path": str(rel.with_suffix("")),  # e.g. "2026/02/2026-02-12"
+            "rel_path": str(rel.with_suffix("")),  # e.g. "AI Daily News/2026/02/2026-02-12"
         })
 
     digests.sort(key=lambda d: d["date"], reverse=True)
@@ -105,7 +105,7 @@ def scan_products(content_dir: Path) -> list[dict]:
             "status": fm.get("status", ""),
             "last_updated": str(fm.get("last_updated", "")),
             "slug": slug,
-            "link": f"[[{slug}/{slug}|{fm.get('product_name', slug)}]]",
+            "link": f"[[AI Agent Products/{slug}/{slug}|{fm.get('product_name', slug)}]]",
         })
 
     category_order = {"B2C": 0, "Enterprise": 1, "Analytics": 2, "Knowledge": 3}
@@ -136,7 +136,7 @@ def scan_insights(content_dir: Path) -> list[dict]:
             "confidence": fm.get("confidence", ""),
             "last_updated": str(fm.get("last_updated", "")),
             "slug": slug,
-            "link": f"[[{category}/{slug}|{fm.get('topic_name', slug)}]]",
+            "link": f"[[Insights/{category}/{slug}|{fm.get('topic_name', slug)}]]",
         })
 
     insights.sort(key=lambda i: i["last_updated"], reverse=True)
