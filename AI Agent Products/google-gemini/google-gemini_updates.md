@@ -4,7 +4,7 @@ product_id: google-gemini
 tags:
   - AI-Agent
   - updates-log
-last_appended: 2026-02-09
+last_appended: 2026-02-11
 ---
 
 # Google Gemini 업데이트 로그
@@ -23,4 +23,10 @@ last_appended: 2026-02-09
 -->
 
 <!-- UPDATES_START -->
+### 2026-02-11 | LangSmith Google Cloud Marketplace 출시
+**소스**: [LangSmith is Now Available in Google Cloud Marketplace](https://blog.langchain.com/langsmith-is-now-available-in-google-cloud-marketplace/)
+**요약**: LangSmith가 Google Cloud Marketplace에 출시. GCP 고객 결제·조달 간소화. Vertex AI 및 Gemini와의 통합 강조.
+**카테고리**: 파트너십
+**영향도**: 보통
+
 <!-- UPDATES_END -->

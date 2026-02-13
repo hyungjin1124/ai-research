@@ -4,7 +4,7 @@ product_id: claude
 tags:
   - AI-Agent
   - updates-log
-last_appended: 2026-02-10
+last_appended: 2026-02-12
 ---
 
 # Claude 업데이트 로그
@@ -36,5 +36,11 @@ last_appended: 2026-02-10
 **요약**: Anthropic이 5개월 전 $13B 투자에 이어 $20B 규모의 신규 라운드를 마무리 중이다. 경쟁 심화와 연산 비용 증가가 배경이며, AI 업계 자본 경쟁 가속화를 보여준다.
 **카테고리**: 실적
 **영향도**: 높음
+
+### 2026-02-12 | 데이터센터 전기요금 인상분 100% 자체 부담 선언
+**소스**: [Covering electricity price increases from our data centers](https://www.anthropic.com/news/covering-electricity-price-increases)
+**요약**: Anthropic이 데이터센터 확장으로 인한 전기요금 인상분을 소비자에게 전가하지 않고 100% 자체 부담 선언. 그리드 업그레이드 비용 전액 부담, 순신규 발전 설비 투자, 커테일먼트 시스템 투자를 약속.
+**카테고리**: 기타
+**영향도**: 보통
 
 <!-- UPDATES_END -->

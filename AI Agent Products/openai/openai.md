@@ -10,7 +10,7 @@ tags:
   - LLM-Native
 url: https://chatgpt.com
 launched: 2022-11
-last_updated: 2026-02-09
+last_updated: 2026-02-12
 status: in-progress
 related:
   - "[[엔터프라이즈 AI 서비스 비교 분석]]"
@@ -40,6 +40,9 @@ OpenAI가 개발한 세계 최대 B2C AI 플랫폼. GPT-5.2(플래그십)와 o3/
 - **Custom GPTs**: 사용자가 직접 전문가 페르소나·지식·도구를 정의하여 맞춤형 AI를 생성. GPT-4o, o3, o4-mini 등 전체 모델 선택 가능. Voice Mode 연동으로 음성 대화형 커스텀 GPT 구현 가능. GPT Store를 통해 퍼블리싱·검색·공유
 - **Voice Mode**: 실시간 음성 대화 인터페이스. gpt-realtime 모델 기반의 Speech-to-Speech 아키텍처로 고객 지원, 개인 비서, 교육 등에 특화. Plus 사용자는 거의 무제한, Free 사용자도 하루 수 시간 이용 가능. 사용자 지시에 따라 말하기 스타일(길이, 속도, 톤) 자동 조절
 - **Memory**: 대화 간 사용자 선호·배경 정보를 지속적으로 기억하여 개인화된 응답 제공. 설정에서 켜기/끄기 가능. 기억된 내용을 사용자가 직접 확인·삭제 가능
+- **Skills API**: 2026년 2월 발표. SKILL.md 매니페스트(YAML front matter + 마크다운 지시문) 기반의 재사용 가능 모듈 시스템. 인스트럭션·스크립트·에셋을 버전 관리되는 파일 번들(최대 500파일, 25MB)로 패키징하여, 에이전트가 메타데이터를 기반으로 자율적으로 선택·실행. Responses API의 Shell Tool과 통합되어 호스팅 컨테이너 또는 로컬 환경에서 동작 [^1]
+- **Shell Tool (Hosted Container)**: Debian 12 기반 컨테이너(`container_auto`)에서 에이전트가 코드를 생성·실행하는 도구. Python 3.11, Node.js 22, Java 17, Go 1.23 등 주요 런타임 지원. 네트워크 접근 가능하여 외부 API 호출, 패키지 설치 등 수행. Codex Sandbox와 달리 Responses API에 통합되어 대화 중 즉시 코드 실행 가능 [^1]
+- **Server-side Compaction**: 긴 대화의 컨텍스트를 서버 측에서 자동 압축하여 장기 실행 에이전트의 안정성과 효율성 확보. 컨텍스트 윈도우 한계를 운영 수준에서 완화 [^1]
 
 ## 아키텍처
 
@@ -59,10 +62,16 @@ OpenAI가 개발한 세계 최대 B2C AI 플랫폼. GPT-5.2(플래그십)와 o3/
 - **Codex Sandbox**: 각 태스크를 독립 클라우드 샌드박스에서 실행. 리포지토리 프리로드 → 계획 수립 → 코드 작성·테스트 → 결과 제출의 비동기 워크플로우
 - **Responses API**: Assistants API를 대체하는 차세대 통합 인터페이스. 도구 호출(Function Calling), 웹 검색, 코드 실행, 파일 분석을 단일 API에서 처리. Assistants API는 Responses API 기능 완전 이전 후 2026년 중 종료 예정
 - **Realtime API**: gpt-realtime 모델 기반 Speech-to-Speech 스트리밍. 고객 지원, 교육 등 실시간 음성 에이전트 구축용
+- **Skills System**: SKILL.md 매니페스트(이름, 설명, 지시문)와 파일 번들(스크립트, 에셋, 설정)을 버전 관리 단위로 패키징하는 에이전트 도구 모듈 시스템. Responses API의 `tools[].environment.skills`로 Shell Tool에 연결되며, 모델이 메타데이터(이름, 설명, 경로)를 기반으로 자율적으로 스킬 호출을 판단한다. 인라인 스킬(base64 zip)과 호스팅 스킬(API 업로드) 두 가지 배포 모드를 지원. 버전 고정(pinning)으로 프로덕션 재현성 확보. OpenAI가 큐레이팅하는 1st-party 스킬(예: `openai-spreadsheets`)도 제공 [^1]
+- **Shell Tool**: Debian 12 컨테이너(`container_auto`) 기반 코드 실행 환경. 에이전트가 스킬 스크립트 실행, 패키지 설치, 네트워크 접근, 파일 I/O를 수행. Codex Sandbox가 비동기 독립 작업용이라면, Shell Tool은 Responses API 대화 중 즉시 실행에 최적화 [^1]
+- **Server-side Compaction**: 대화 히스토리를 서버 측에서 자동 압축하여 장기 실행 에이전트의 컨텍스트 윈도우를 효율적으로 관리. 에이전트가 수십~수백 턴에 걸쳐 작업을 수행할 때 안정성을 보장 [^1]
+<!-- Deep Dive: 2026-02-12 | OpenAI Skills API + Shell Tool + Compaction | 에이전트 아키텍처 섹션에 Skills System, Shell Tool, Server-side Compaction 추가 -->
 
 ### 프로토콜 지원
 - **MCP**: 2025년 3월부터 Agents SDK, Responses API, ChatGPT Desktop에서 MCP 지원. 서드파티 도구 연결용 표준 프로토콜로 채택
 - **Function Calling**: OpenAI 자체 도구 호출 프로토콜. JSON Schema 기반 함수 정의 → 모델이 파라미터 생성 → 외부 실행 → 결과 반환
+- **Skills (Open Agent Skills)**: 2026년 2월 도입. SKILL.md 매니페스트 기반의 에이전트 도구 패키징 표준. MCP가 "외부 도구 서버 연결"에 초점이라면, Skills는 "도구 번들의 패키징·버전 관리·실행 환경 제공"에 초점을 맞춘다. MCP와 경쟁보다는 보완적이나, 에이전트가 도구를 사용하는 방식에서 Anthropic의 MCP 서버 모델과 대비되는 OpenAI의 독자적 접근법 [^1]
+<!-- Deep Dive: 2026-02-12 | OpenAI Skills API + Shell Tool + Compaction | 프로토콜 지원에 Skills 항목 추가 -->
 
 ### 플랫폼 통합
 - **Microsoft 에코시스템**: Azure OpenAI Service를 통한 엔터프라이즈 배포. Microsoft 365 Copilot과의 간접적 연결
@@ -102,7 +111,7 @@ OpenAI가 개발한 세계 최대 B2C AI 플랫폼. GPT-5.2(플래그십)와 o3/
 ### 약점
 - **코딩 벤치마크**: SWE-bench Verified 기준 GPT-5.2의 80.0%는 Claude Sonnet 5(82.1%) 대비 소폭 열세
 - **안전성 논란**: 빠른 출시 주기에 따른 안전성 검증 우려. 할루시네이션 이슈에서 Claude 대비 약간 높은 비율이라는 평가
-- **프로토콜 독자성 부재**: MCP는 Anthropic 주도, A2A/A2UI는 Google 주도. OpenAI 자체 표준 프로토콜 부재로 생태계 표준 주도권에서 후발
+- **프로토콜 후발**: MCP는 Anthropic 주도, A2A/A2UI는 Google 주도. 2026년 2월 Skills(Open Agent Skills)를 도입하여 독자 에이전트 도구 표준을 마련했으나, MCP 생태계의 선점 효과를 극복해야 하는 과제가 남아 있음
 - **가격 부담**: Pro $200/월은 Claude Max($200/월)와 동일하나, Gemini AI Pro($19.99/월) 대비 중간 티어(Plus $20/월)에서의 기능 차별화가 약함
 - **컨텍스트 윈도우**: 128K 토큰으로 Claude(200K), Gemini(1M) 대비 가장 짧음
 
@@ -118,7 +127,7 @@ OpenAI가 개발한 세계 최대 B2C AI 플랫폼. GPT-5.2(플래그십)와 o3/
 | 코딩 에이전트 | Codex (클라우드 샌드박스) | Claude Code (CLI) | Jules (GitHub 통합) |
 | 음성 에이전트 | gpt-realtime (S2S) | - | Gemini Live |
 | 커스텀 에이전트 | Custom GPTs + GPT Store | Projects + Styles | Gems |
-| 프로토콜 | MCP (채택), Function Calling | MCP (창안·주도) | MCP + A2A + A2UI |
+| 프로토콜 | MCP (채택), Function Calling, Skills | MCP (창안·주도) | MCP + A2A + A2UI |
 
 ## 관련 리서치
 
@@ -126,6 +135,8 @@ OpenAI가 개발한 세계 최대 B2C AI 플랫폼. GPT-5.2(플래그십)와 o3/
 
 ## 참고 자료
 
+- [^1]: [OpenAI Skills Documentation](https://developers.openai.com/api/docs/guides/tools-skills) — Skills API, Shell Tool, Server-side Compaction 기술 상세
+- [^2]: [Skills in OpenAI API Cookbook](https://developers.openai.com/cookbook/examples/skills_in_api) — Skills API 구현 예제 및 배포 가이드
 - [ChatGPT 공식 사이트](https://chatgpt.com)
 - [OpenAI API 개발자 문서](https://platform.openai.com/docs)
 - [OpenAI: Introducing Operator](https://openai.com/index/introducing-operator/)

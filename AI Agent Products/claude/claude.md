@@ -18,7 +18,6 @@ related:
   - "[[Claude Cowork UI 분석]]"
   - "[[Claude Cowork 플랜 아키텍처]]"
   - "[[Claude Cowork 데모 시나리오]]"
-  - "[[AI 에이전트 서비스 서베이 (2025-2026)]]"
   - "[[엔터프라이즈 AI 서비스 비교 분석]]"
 ---
 
@@ -132,7 +131,6 @@ Anthropic이 개발한 안전성 중심(Constitutional AI) LLM 플랫폼. 텍스
 - [[Claude Cowork UI 분석]] -- Cowork 인터페이스의 UI/UX 패턴 상세 분석
 - [[Claude Cowork 플랜 아키텍처]] -- Cowork 아키텍처 및 기술 스택 분석
 - [[Claude Cowork 데모 시나리오]] -- 실제 사용 시나리오 및 데모 케이스
-- [[AI 에이전트 서비스 서베이 (2025-2026)]] -- Claude Cowork 포함 주요 에이전트 서비스 크로스 비교
 - [[엔터프라이즈 AI 서비스 비교 분석]] -- 크로스 제품 UI/UX 비교 테이블에서 Claude 관련 분석 참조
 
 ## 참고 자료

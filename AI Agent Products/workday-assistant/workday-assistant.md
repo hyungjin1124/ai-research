@@ -128,16 +128,16 @@ Workday가 개발한 HR·Finance 특화 엔터프라이즈 AI 에이전트 플�
 - **Generative UI 미비**: 응답 포맷이 텍스트·리스트 중심이며, Salesforce Agentforce의 3-Panel Builder나 Google Gemini의 Dynamic View 같은 동적 UI 생성 기능은 부재
 
 ### 주요 경쟁사 비교
-| 항목 | Workday Assistant | ServiceNow Now Assist | SAP Joule |
-|------|------------------|----------------------|-----------|
-| 핵심 도메인 | HR, Finance | ITSM, CSM, HRSD | ERP, HCM, SCM, Procurement |
-| 에이전트 관리 | ASOR (에이전트를 직원처럼 관리) | AI Agent Orchestrator | SAP AI Core |
-| 프로토콜 지원 | MCP + A2A (네이티브) | REST API, 전용 커넥터 | Microsoft 365 Copilot 양방향 |
-| 파트너 생태계 | Agent Partner Network (50+ 파트너) | ServiceNow Store | SAP Store |
-| 빌더 도구 | Workday Build + Flowise Agent Builder | AI Agent Studio | Joule Studio |
-| 가격 모델 | Flex Credits 소비 | 시트 기반 + Assist 토큰 | SAP 라이선스 번들 |
-| 에이전트 라인업 | HR 6종 + Finance 5종 (Illuminate) | 도메인별 Skills + AI Agents | Cross-product (80% 트랜잭션) |
-| 학습/검색 | Sana Labs 통합 (AI 검색·학습) | Knowledge Management | SAP Knowledge Graph |
+| 항목       | Workday Assistant                     | ServiceNow Now Assist   | SAP Joule                  |
+| -------- | ------------------------------------- | ----------------------- | -------------------------- |
+| 핵심 도메인   | HR, Finance                           | ITSM, CSM, HRSD         | ERP, HCM, SCM, Procurement |
+| 에이전트 관리  | ASOR (에이전트를 직원처럼 관리)                  | AI Agent Orchestrator   | SAP AI Core                |
+| 프로토콜 지원  | MCP + A2A (네이티브)                      | REST API, 전용 커넥터        | Microsoft 365 Copilot 양방향  |
+| 파트너 생태계  | Agent Partner Network (50+ 파트너)       | ServiceNow Store        | SAP Store                  |
+| 빌더 도구    | Workday Build + Flowise Agent Builder | AI Agent Studio         | Joule Studio               |
+| 가격 모델    | Flex Credits 소비                       | 시트 기반 + Assist 토큰       | SAP 라이선스 번들                |
+| 에이전트 라인업 | HR 6종 + Finance 5종 (Illuminate)       | 도메인별 Skills + AI Agents | Cross-product (80% 트랜잭션)   |
+| 학습/검색    | Sana Labs 통합 (AI 검색·학습)               | Knowledge Management    | SAP Knowledge Graph        |
 
 ## 관련 리서치
 

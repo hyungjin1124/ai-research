@@ -147,12 +147,16 @@ AI Agent 서비스별 종합 리서치를 제품 단위로 정리합니다. B2C�
 5. `{new-slug}/assets/` 폴더 생성
 6. `_INDEX.md`는 Dataview가 자동 갱신하므로 수동 편집 불필요
 
-### 기존 리서치 참조
+---
 
-`KonaChain/리서치/UI/` 폴더의 기존 분석은 제품 메인 노트의 `related` frontmatter 필드와 "관련 리서치" 섹션에서 wikilink로 참조합니다. 기존 파일은 이동하지 않습니다.
+## Insights 레이어 연결
 
-| 기존 위치 | 연결 대상 |
-|-----------|----------|
-| `UI/04_Claude_Cowork_분석/` | `claude/claude.md` |
-| `UI/03_Manus_AI_분석/` | `manus-ai/manus-ai.md` |
-| `UI/01_벤치마크_서비스비교/` | 크로스 제품 비교 — 개별 제품에서 링크 |
+제품 간 **교차 분석**이 필요한 경우 `Insights/` 디렉터리를 참조하세요.
+
+| 질문 유형 | Insights 경로 |
+|-----------|-------------|
+| 경쟁사별 MCP 구현 비교 | `Insights/agent-skills/mcp-server-implementations.md` |
+| 에이전트 루프 패턴 비교 | `Insights/agent-runtime/agent-orchestration-loops.md` |
+| RAG 아키텍처 비교 | `Insights/knowledge-data/rag-architecture-comparison.md` |
+| HITL 승인 UI 패턴 비교 | `Insights/agent-ui/hitl-approval-patterns.md` |
+| 전체 인사이트 인덱스 | `Insights/_INDEX.md` |

@@ -4,7 +4,7 @@ product_id: sap-joule
 tags:
   - AI-Agent
   - updates-log
-last_appended: 2026-02-09
+last_appended: 2026-02-12
 ---
 
 # SAP Joule 업데이트 로그
@@ -23,4 +23,10 @@ last_appended: 2026-02-09
 -->
 
 <!-- UPDATES_START -->
+### 2026-02-12 | 자동차 산업 AI 에이전트 활용 사례 공개 — Joule + BTP 통합
+**소스**: [Why Customer-Specific AI Will Define the Next Era of the Automotive Ecosystem](https://news.sap.com/2026/02/customer-specific-ai-next-era-automotive-ecosystem/)
+**요약**: SAP가 자동차 산업에서 AI 에이전트 활용 방안 제시. 서비스 부품 예측 기반 계획, BTP+Joule 통합. Production Planning & Operations Agent, Change Record Management Agent 2026년 2월 GA 예정.
+**카테고리**: 파트너십
+**영향도**: 보통
+
 <!-- UPDATES_END -->

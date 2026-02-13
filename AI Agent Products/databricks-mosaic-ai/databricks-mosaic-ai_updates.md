@@ -4,7 +4,7 @@ product_id: databricks-mosaic-ai
 tags:
   - AI-Agent
   - updates-log
-last_appended: 2026-02-09
+last_appended: 2026-02-12
 ---
 
 # Databricks Mosaic AI 업데이트 로그
@@ -23,4 +23,16 @@ last_appended: 2026-02-09
 -->
 
 <!-- UPDATES_START -->
+### 2026-02-12 | Brickbuilder Partner Network 출시 — 에이전틱 AI 시대 파트너 생태계 재편
+**소스**: [Introducing Brickbuilder Partner Network for the Agentic AI Era](https://www.databricks.com/blog/building-whats-next-together-introducing-brickbuilder-partner-network-agentic-ai-era)
+**요약**: 컨설팅/SI, ISV, 데이터 프로바이더를 통합하는 Brickbuilder Partner Network 출시. Bronze-Platinum 4단계 티어링, Velocity 인센티브 모델로 파트너 경제 모델을 "Bookings"에서 "Lifecycle Value"로 전환.
+**카테고리**: 파트너십
+**영향도**: 보통
+
+### 2026-02-12 | AI/BI Genie, Foundation Model API — AWS GovCloud GA
+**소스**: [AI/BI Genie, Foundation Model API Now GA in AWS GovCloud](https://www.databricks.com/blog/aibi-genie-foundational-model-api-and-databricks-assistant-now-generally-available-aws)
+**요약**: AI/BI Genie, Foundational Model API, Databricks Assistant를 AWS GovCloud에서 GA 제공. 높은 컴플라이언스 요구사항의 정부기관에서 활용 가능.
+**카테고리**: 신기능
+**영향도**: 보통
+
 <!-- UPDATES_END -->
