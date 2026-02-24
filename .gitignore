@@ -2,6 +2,9 @@
 .obsidian/
 .DS_Store
 
+# Claude Code
+.claude/
+
 # Large media files (add specific ones if needed)
 # *.mp4
 # *.zip
